@@ -1,0 +1,14 @@
+[Unit]
+Description=QQ Bot Bridge (DeepSeek + OneBot)
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+WorkingDirectory=/opt/qq-bot-bridge
+Environment=DEEPSEEK_API_KEY=sk-改成你的key
+ExecStart=/usr/bin/node /opt/qq-bot-bridge/src/index.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

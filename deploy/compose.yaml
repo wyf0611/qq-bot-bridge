@@ -1,0 +1,19 @@
+services:
+  napcat:
+    image: mlikiowa/napcat-docker:v4.18.28
+    container_name: napcat
+    restart: unless-stopped
+    environment:
+      - NAPCAT_UID=0
+      - NAPCAT_GID=0
+      - ACCOUNT=你的QQ号            # 改成你的 QQ 号（快速登录，重启免扫码）
+      - WEBUI_TOKEN=请改成随机字符串  # WebUI 登录令牌，自己设一串
+      - TZ=Asia/Shanghai
+    ports:
+      - "3000:3000"   # OneBot HTTP
+      - "3001:3001"   # OneBot WebSocket
+      - "6099:6099"   # WebUI 管理面板
+    volumes:
+      - ./config:/app/napcat/config
+      - ./QQ:/app/.config/QQ
+      - ./plugins:/app/napcat/plugins

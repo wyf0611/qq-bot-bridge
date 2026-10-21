@@ -1,0 +1,26 @@
+{
+  "deepseek": {
+    "apiKey": "",
+    "baseURL": "https://api.deepseek.com",
+    "model": "deepseek-v4-pro",
+    "timeoutMs": 120000,
+    "maxTokens": 4096
+  },
+  "onebot": {
+    "wsUrl": "ws://127.0.0.1:3001",
+    "httpUrl": "http://127.0.0.1:3000",
+    "selfId": 0
+  },
+  "chat": {
+    "systemPrompt": "你是 DeepSeek 助手，通过 QQ 与用户聊天。回复简洁友好，用中文，像朋友一样自然。",
+    "maxHistory": 20,
+    "idleTtlMs": 1800000,
+    "persist": true,
+    "persistPath": "data/sessions.json"
+  },
+  "rateLimit": {
+    "globalPerMinute": 20,
+    "perChatConcurrency": 1
+  },
+  "logLevel": "info"
+}

@@ -1,0 +1,14 @@
+{
+  "name": "qq-bot-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "QQ 聊天机器人桥接：OneBot v11 协议端 + DeepSeek chat API",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

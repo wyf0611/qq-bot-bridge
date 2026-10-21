@@ -3,6 +3,7 @@
     "apiKey": "",
     "baseURL": "https://api.deepseek.com",
     "model": "deepseek-v4-pro",
+    "visionModel": "deepseek-v4-flash-vision-exp",
     "timeoutMs": 120000,
     "maxTokens": 4096
   },

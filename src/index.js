@@ -56,23 +56,44 @@ async function main() {
   const limiter = new RateLimiter(config.rateLimit?.globalPerMinute ?? 0);
 
   const onebot = new OneBotClient(config.onebot, {
-    async onMessage({ chatId, type, text, userId, groupId }) {
-      if (!text) {
+    async onMessage({ chatId, type, text, images, userId, groupId }) {
+      if (!text && (!images || images.length === 0)) {
         await onebot.sendText(type, '（我只会文字聊天哦）', userId, groupId).catch(() => {});
         return;
       }
       await sessions.runExclusive(chatId, async () => {
         const history = sessions.get(chatId);
-        history.push({ role: 'user', content: text });
+        const hasImages = images && images.length > 0;
+
+        // 历史里图片用占位符，真实图片只进当前这一轮
+        const historyRecord = { role: 'user', content: text + (hasImages ? ' [图片]' : '') };
+        let userMessage;
+        if (hasImages) {
+          const content = [];
+          if (text) content.push({ type: 'text', text });
+          for (const img of images) {
+            content.push({ type: 'image_url', image_url: { url: `data:${img.mime};base64,${img.base64}` } });
+          }
+          userMessage = { role: 'user', content };
+        } else {
+          userMessage = { role: 'user', content: text };
+        }
+
+        history.push(historyRecord);
 
         await limiter.wait();
 
         let reply;
         try {
-          reply = await deepseek.chat([
+          const model = hasImages
+            ? (config.deepseek.visionModel || 'deepseek-v4-flash-vision-exp')
+            : config.deepseek.model;
+          const msgs = [
             { role: 'system', content: config.chat.systemPrompt },
-            ...history,
-          ]);
+            ...history.slice(0, -1),
+            userMessage,
+          ];
+          reply = await deepseek.chat(msgs, { model });
         } catch (e) {
           console.error('[bot] DeepSeek 调用失败:', e.message);
           reply = '我这边出错了，稍后再试。';

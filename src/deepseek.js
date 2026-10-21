@@ -1,16 +1,19 @@
-// DeepSeek chat completions 流式调用（OpenAI 兼容协议 + SSE）
+// DeepSeek chat completions 流式调用（OpenAI 兼容协议 + SSE），支持文字/多模态
 export class DeepSeekClient {
   constructor(config) {
     this.config = config;
   }
 
-  async chat(messages) {
-    const { apiKey, baseURL, model, timeoutMs = 120000, maxTokens = 4096 } = this.config;
+  async chat(messages, opts = {}) {
+    const { apiKey, baseURL, model: defaultModel, timeoutMs = 120000, maxTokens = 4096 } = this.config;
+    const model = opts.model || defaultModel;
+    const max_tokens = opts.maxTokens ?? maxTokens;
+    const t = opts.timeoutMs ?? timeoutMs;
     if (!apiKey) throw new Error('缺少 DeepSeek API key');
 
     const url = baseURL.replace(/\/+$/, '') + '/chat/completions';
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    const timer = setTimeout(() => controller.abort(), t);
 
     try {
       const res = await fetch(url, {
@@ -19,12 +22,7 @@ export class DeepSeekClient {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${apiKey}`,
         },
-        body: JSON.stringify({
-          model,
-          messages,
-          stream: true,
-          max_tokens: maxTokens,
-        }),
+        body: JSON.stringify({ model, messages, stream: true, max_tokens }),
         signal: controller.signal,
       });
 

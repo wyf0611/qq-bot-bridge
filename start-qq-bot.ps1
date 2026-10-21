@@ -2,6 +2,10 @@
 $ErrorActionPreference = 'Stop'
 $proj = $PSScriptRoot
 
+# 清除可能失效的代理环境变量（Node 直连 api.deepseek.com，本机 7890 代理当前未运行）
+$env:HTTP_PROXY = $null; $env:HTTPS_PROXY = $null
+$env:http_proxy = $null; $env:https_proxy = $null
+
 # 1. 从 DSH 凭据注入 DeepSeek key（仅当未设环境变量）
 if (-not $env:DEEPSEEK_API_KEY) {
   $cred = Join-Path $env:USERPROFILE '.dsh\.credentials.yaml'
